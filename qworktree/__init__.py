@@ -215,7 +215,12 @@ for elem in tmp_out:
 
 project_elements_ordered = []
 
+max_loop = len(project_elements) * 10
+
 while len(project_elements) != 0:
+	max_loop -= 1
+	if max_loop <= 0:
+		debug.error("ERROR: Detect dependency loop...")
 	debug.info("Order dependency: " + str(len(project_elements)) + "    ->    " + str(len(project_elements_ordered)))
 	for elem in project_elements:
 		debug.info("    " + elem["name"] + "   " + str(len(elem["dependency"])))
