@@ -197,6 +197,36 @@ def get_element_depend(_path):
 		return the_element.depend_on
 	return []
 
+#create object for every elements:
+project_elements = []
+
+for elem in tmp_out:
+	dependency = get_element_depend(elem)
+	name = get_element_name(elem)
+	project_elements.append({
+		"file": elem,
+		"name": name,
+		"dependency": dependency
+		})
+
+project_elements_ordered = []
+
+while len(project_elements) != 0:
+	debug.info("Order dependency: " + str(len(project_elements)) + "    ->    " + str(len(project_elements_ordered)))
+	for elem in project_elements:
+		debug.info("    " + elem["name"] + "   " + str(len(elem["dependency"])))
+		if len(elem["dependency"]) == 0:
+			debug.info("        Add element: '" + elem["name"] + "'")
+			project_elements_ordered.append(copy.deepcopy(elem))
+			project_elements.remove(elem)
+	for elem in project_elements:
+		debug.info("    clean " + elem["name"])
+		for dep in elem["dependency"]:
+			for elem_ordered in project_elements_ordered:
+				if dep == elem_ordered["name"]:
+					elem["dependency"].remove(dep)
+					break
+	
 
 """
 for elem in tmp_out:
@@ -209,6 +239,10 @@ for elem in tmp_out:
 	debug.info("    depends=" + str(dependency))
 """
 
+debug.info("Ordering done: " + str(len(project_elements)) + "    ->    " + str(len(project_elements_ordered)))
+#project_elements_ordered.reverse()
+
+
 out = "# Automatic generation with qworktree ... \n"
 out += "TEMPLATE = subdirs\n"
 out += "\n"
@@ -216,18 +250,23 @@ out += "load(root_directory.prf)\n"
 out += "\n"
 out += "#import folders\n"
 out += "SUBDIRS += \\\n"
-for elem in tmp_out:
-	relative_file = os.path.dirname(os.path.relpath(elem, tools.get_run_path()))
-	out += "    " + relative_file + " \\\n"
+for elem in project_elements_ordered:
+	#relative_file = os.path.dirname(os.path.relpath(elem, tools.get_run_path()))
+	#out += "    " + relative_file + " \\\n"
+	out += "    " + elem["name"] + " \\\n"
+
+out += "\n"
+out += "#define every folders\n"
+for elem in project_elements_ordered:
+	relative_file = os.path.dirname(os.path.relpath(elem["file"], tools.get_run_path()))
+	out += elem["name"] + ".subdir = " + relative_file + "\n"
 
 out += "\n"
 out += "#define dependency\n"
 
-for elem in tmp_out:
-	dependency = get_element_depend(elem)
-	name = get_element_name(elem)
-	out += "#define dependency of " + name + "\n"
-	for dep in dependency:
+for elem in project_elements_ordered:
+	out += "#define dependency of " + elem["name"] + "\n"
+	for dep in elem["dependency"]:
 		out += name + ".depends = " + dep + "\n"
 	out += "\n"
 out += "\n"
@@ -239,10 +278,9 @@ tools.file_write_data(os.path.join(tools.get_run_path(), os.path.basename(tools.
 
 out = "# Automatic generation with qworktree ... \n"
 out += "\n"
-for elem in tmp_out:
-	name = get_element_name(elem)
-	relative_file = os.path.dirname(os.path.relpath(elem, tools.get_run_path()))
-	out += "LIB_DECLARE_DEPENDENCIES_" + name.upper() + " = " + os.path.join(relative_file, "dependencies.pri") + "\n"
+for elem in project_elements_ordered:
+	relative_file = os.path.dirname(os.path.relpath(elem["file"], tools.get_run_path()))
+	out += "LIB_DECLARE_DEPENDENCIES_" + elem["name"].upper() + " = " + os.path.join(relative_file, "dependencies.pri") + "\n"
 out += "\n"
 out += "\n"
 out += "\n"
@@ -251,3 +289,4 @@ out += "\n"
 tools.file_write_data(os.path.join(tools.get_run_path(), "defines.prf"), out, only_if_new=True)
 
 debug.info("Create basic qmake project")
+
