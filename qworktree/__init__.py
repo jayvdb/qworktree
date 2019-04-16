@@ -223,17 +223,17 @@ while len(project_elements) != 0:
 		debug.error("ERROR: Detect dependency loop...")
 	debug.info("Order dependency: " + str(len(project_elements)) + "    ->    " + str(len(project_elements_ordered)))
 	for elem in project_elements:
-		debug.info("    " + elem["name"] + "   " + str(len(elem["dependency"])))
-		if len(elem["dependency"]) == 0:
+		debug.info("    " + elem["name"] + "   " + str(len(elem["dependency2"])))
+		if len(elem["dependency2"]) == 0:
 			debug.info("        Add element: '" + elem["name"] + "'")
 			project_elements_ordered.append(copy.deepcopy(elem))
 			project_elements.remove(elem)
 	for elem in project_elements:
 		debug.info("    clean " + elem["name"])
-		for dep in elem["dependency"]:
+		for dep in elem["dependency2"]:
 			for elem_ordered in project_elements_ordered:
 				if dep == elem_ordered["name"]:
-					elem["dependency"].remove(dep)
+					elem["dependency2"].remove(dep)
 					break
 	
 
