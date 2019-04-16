@@ -206,8 +206,12 @@ for elem in tmp_out:
 	project_elements.append({
 		"file": elem,
 		"name": name,
-		"dependency": dependency
+		"dependency": copy.deepcopy(dependency),
+		"dependency2": copy.deepcopy(dependency)
 		})
+	debug.info("--------------------------------------------------------------------------------------------------")
+	debug.info("Element:        '" + name + "'            in path='" + elem + "'")
+	debug.info("    depends:    " + str(dependency))
 
 project_elements_ordered = []
 
