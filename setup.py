@@ -16,7 +16,7 @@ def readme():
 
 # https://pypi.python.org/pypi?%3Aaction=list_classifiers
 setup(name='qworktree',
-      version='0.2.0',
+      version='0.3.0',
       description='qworktree generator of main Qt .pro file for a full worktree',
       long_description=readme(),
       url='http://github.com/HeeroYui/qworktree',
