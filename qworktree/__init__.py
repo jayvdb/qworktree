@@ -65,6 +65,15 @@ def import_path_local(path, limit_sub_folder, exclude_path = [], base_name = "")
 	# check if we need to parse sub_folder
 	if len(tmp_list_qworktree_file) != 0:
 		need_parse_sub_folder = False
+		new_basic_path = os.path.join(path, "test")
+		if os.path.isdir(new_basic_path):
+			tmp_out = import_path_local(new_basic_path,
+			                            1,
+			                            exclude_path,
+			                            base_name)
+			# add all the elements:
+			for elem in tmp_out:
+				out.append(elem)
 	# check if the file "qworktree_parse_sub.py" is present ==> parse SubFolder (force and add +1 in the resursing
 	if base_name + "ParseSubFolders.txt" in list_files:
 		debug.debug("find SubParser ... " + str(base_name + "ParseSubFolders.txt") + " " + path)
