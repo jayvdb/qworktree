@@ -62,18 +62,6 @@ def import_path_local(path, limit_sub_folder, exclude_path = [], base_name = "")
 		debug.extreme_verbose("     Find a file : '" + str(out[-1]) + "'")
 	need_parse_sub_folder = True
 	rm_value = -1
-	# check if we need to parse sub_folder
-	if len(tmp_list_qworktree_file) != 0:
-		need_parse_sub_folder = False
-		new_basic_path = os.path.join(path, "test")
-		if os.path.isdir(new_basic_path):
-			tmp_out = import_path_local(new_basic_path,
-			                            1,
-			                            exclude_path,
-			                            base_name)
-			# add all the elements:
-			for elem in tmp_out:
-				out.append(elem)
 	# check if the file "qworktree_parse_sub.py" is present ==> parse SubFolder (force and add +1 in the resursing
 	if base_name + "ParseSubFolders.txt" in list_files:
 		debug.debug("find SubParser ... " + str(base_name + "ParseSubFolders.txt") + " " + path)
@@ -274,10 +262,17 @@ for elem in project_elements_ordered:
 	out += "    " + elem["name"] + " \\\n"
 
 out += "\n"
+
+
+out += "# build the project sequentially as listed in SUBDIRS !\n"
+out += "CONFIG += ordered\n"
+
+out += "\n"
 out += "#define every folders\n"
 for elem in project_elements_ordered:
 	relative_file = os.path.dirname(os.path.relpath(elem["file"], tools.get_run_path()))
-	out += elem["name"] + ".subdir = " + relative_file + "\n"
+	#out += elem["name"] + ".subdir = " + relative_file + "\n"
+	out += elem["name"] + ".file = " + relative_file + "/" + elem["name"] + ".pro\n"
 
 out += "\n"
 out += "#define dependency\n"
