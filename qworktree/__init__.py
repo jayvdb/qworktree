@@ -198,7 +198,9 @@ def get_element_depend(_path):
 		return the_element.depend_on
 	return []
 
-#create object for every elements:
+debug.info("======================================================")
+debug.info("== Create project element")
+debug.info("======================================================")
 project_elements = []
 
 for elem in tmp_out:
@@ -214,6 +216,31 @@ for elem in tmp_out:
 	debug.info("Element:        '" + name + "'            in path='" + elem + "'")
 	debug.info("    depends:    " + str(dependency))
 
+debug.info("======================================================")
+debug.info("== Check if all dependency are availlable")
+debug.info("======================================================")
+list_of_library = []
+missing_dependency = []
+for elem in tmp_out:
+	name = get_element_name(elem)
+	if name not in list_of_library:
+		list_of_library.append(name)
+for elem in tmp_out:
+	dependency = get_element_depend(elem)
+	name = get_element_name(elem)
+	for dep in dependency:
+		if dep not in list_of_library:
+			if dep not in missing_dependency:
+				missing_dependency.append(dep)
+			debug.info("Element:        '" + name + "'")
+			debug.warning("    depends:    " + str(dependency))
+			debug.warning("    missing:    " + str(dep))
+if len(missing_dependency) != 0:
+	debug.error("missing dependency: " + str(missing_dependency))
+
+debug.info("======================================================")
+debug.info("== Ordering elements")
+debug.info("======================================================")
 project_elements_ordered = []
 
 max_loop = len(project_elements) * 10
@@ -306,4 +333,9 @@ out += "\n"
 tools.file_write_data(os.path.join(tools.get_run_path(), "defines.prf"), out, only_if_new=True)
 
 debug.info("Create basic qmake project")
+
+
+debug.info("======================================================")
+debug.info("==                 ALL is GOOD                      ==")
+debug.info("======================================================")
 
