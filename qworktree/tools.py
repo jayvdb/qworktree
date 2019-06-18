@@ -13,8 +13,8 @@ import shutil
 import errno
 import fnmatch
 import stat
+from realog import debug
 # Local import
-from . import debug
 from . import env
 
 """

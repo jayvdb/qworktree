@@ -11,12 +11,16 @@ import os
 import sys
 import fnmatch
 import copy
+from realog import debug
 # Local import
 from . import tools
-from . import debug
 from . import env
 from . import arguments
 
+
+debug.set_display_on_error(   "******************************************************\n"
+                            + "**            ERROR              ERROR              **\n"
+                            + "******************************************************")
 
 def filter_name_and_file(root, list_files, filter):
 	# filter elements:
